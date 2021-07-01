@@ -1,24 +1,20 @@
 const express = require('express');
 const fetch = require('node-fetch');
 const app = express();
-let serv = '';
+require('dotenv').config();
 
-const getPort = () => {
-	const def_port = 4567;
-	if (process.argv.slice(2).length == 0) return def_port;
-	const myArgs = process.argv.slice(2);
-	const name = myArgs[0].split('=');
-	if (name[0] == 'PORT' || name[0] == 'port') return name[1];
-	return def_port;
-};
+const domain = process.env.DOMAIN
+const me = process.env.ME_PORT
+const src = process.env.SRC_PORT
+let serv = '';
 
 app.use(express.text());
 
-const connect = async (req) => {
+const connect = async () => {
 	if (!serv) {
-		await fetch('http://172.16.4.14:8080')
+		await fetch(domain + ':' + src)
 			.then((res) => res.json())
-			.then((body) => (serv = body.filter((p) => p != 'http://172.16.4.14:' + getPort())[0]))
+			.then((body) => (serv = body.filter((p) => p != (domain +':' + me))[0]))
 			.catch((err) => {
 				console.log('serv1 - retry GET all servers');
 				setTimeout(() => connect(), 500);
@@ -37,10 +33,6 @@ const connect = async (req) => {
 	} 
 };
 
-const getAddr = async (req) => {
-	
-};
-
 connect();
 
 app.post('/', (req, res) => {
@@ -50,4 +42,4 @@ app.post('/', (req, res) => {
 	}
 });
 
-app.listen(getPort());
+app.listen(me);
