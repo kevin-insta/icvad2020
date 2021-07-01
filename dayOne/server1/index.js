@@ -16,26 +16,29 @@ app.use(express.text());
 
 const connect = async (req) => {
 	if (!serv) {
-		await fetch('http://localhost:8080')
+		await fetch('http://172.16.4.14:8080')
 			.then((res) => res.json())
-			.then(
-				(body) =>
-					(toto = body.filter(
-						(p) => p != 'http://localhost:' + getPort()
-					)[0])
-			);
+			.then((body) => (serv = body.filter((p) => p != 'http://172.16.4.14:' + getPort())[0]))
+			.catch((err) => {
+				console.log('serv1 - retry GET all servers');
+				setTimeout(() => connect(), 500);
+			});
 	}
+	
+	if(!!serv) {
+		await fetch(serv, {
+			method: 'POST',
+			body: 'pong',
+			headers: { 'Content-Type': 'text/plain' },
+		}).catch((err) => {
+			console.log('serv1 - retry');
+			setTimeout(() => connect(), 500);
+		});
+	} 
+};
 
-	await fetch(toto, {
-		method: 'POST',
-		body: 'pong',
-		headers: { 'Content-Type': 'text/plain' },
-	}).catch((err) => {
-		console.log('serv1 - retry');
-		setTimeout(() => {
-			connect();
-		}, 500);
-	});
+const getAddr = async (req) => {
+	
 };
 
 connect();

@@ -18,12 +18,12 @@ app.post('/', (req, res) => {
 		console.log('serv2 - pong');
 		setTimeout(async () => {
 			let resept;
-			await fetch('http://localhost:8080')
+			await fetch('http://172.16.4.14:8080')
 				.then((res) => res.json())
 				.then(
 					(body) =>
 						(resept = body.filter(
-							(p) => p != 'http://localhost:' + getPort()
+							(p) => p != 'http://172.16.4.14:' + getPort()
 						)[0])
 				);
 			await fetch(resept, {
