@@ -1,16 +1,32 @@
 const express = require('express');
 const fetch = require('node-fetch');
 const app = express();
-const port = 5372;
+
+const getPort = () => {
+	const def_port = 5372;
+	if (process.argv.slice(2).length == 0) return def_port;
+	const myArgs = process.argv.slice(2);
+	const name = myArgs[0].split('=');
+	if (name[0] == 'PORT' || name[0] == 'port') return name[1];
+	return def_port;
+};
 
 app.use(express.text());
 
 app.post('/', (req, res) => {
-	// console.log(req.body);
 	if (req.body == 'pong') {
 		console.log('serv2 - pong');
-		setTimeout(() => {
-			fetch('http://localhost:4567', {
+		setTimeout(async () => {
+			let resept;
+			await fetch('http://localhost:8080')
+				.then((res) => res.json())
+				.then(
+					(body) =>
+						(resept = body.filter(
+							(p) => p != 'http://localhost:' + getPort()
+						)[0])
+				);
+			await fetch(resept, {
 				method: 'POST',
 				body: 'ping',
 				headers: { 'Content-Type': 'text/plain' },
@@ -21,4 +37,4 @@ app.post('/', (req, res) => {
 	}
 });
 
-app.listen(port);
+app.listen(getPort());
