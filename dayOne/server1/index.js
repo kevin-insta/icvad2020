@@ -14,7 +14,7 @@ const connect = async () => {
 	if (!serv) {
 		await fetch(domain + ':' + src)
 			.then((res) => res.json())
-			.then((body) => (serv = body.filter((p) => p != (domain +':' + me))[0]))
+			.then((body) => serv = body.s4)
 			.catch((err) => {
 				console.log('serv1 - retry GET all servers');
 				setTimeout(() => connect(), 500);
@@ -22,14 +22,11 @@ const connect = async () => {
 	}
 	
 	if(!!serv) {
-		await fetch(serv, {
-			method: 'POST',
-			body: 'pong',
-			headers: { 'Content-Type': 'text/plain' },
-		}).catch((err) => {
-			console.log('serv1 - retry');
-			setTimeout(() => connect(), 500);
-		});
+		await fetch(serv, { method: 'POST', body: 'pong', headers: { 'Content-Type': 'text/plain' }})
+			.catch((err) => {
+				console.log('serv1 - retry');
+				setTimeout(() => connect(), 500);
+			});
 	} 
 };
 
@@ -38,7 +35,7 @@ connect();
 app.post('/', (req, res) => {
 	if (req.body == 'ping') {
 		console.log('serv1 - ping');
-		connect();
+		setTimeout(() => connect(), 500)
 	}
 });
 

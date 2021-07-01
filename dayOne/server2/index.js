@@ -14,7 +14,7 @@ const connect = async () => {
 	if (!serv) {
 		await fetch(domain + ':' + src)
 			.then((res) => res.json())
-			.then((body) => (serv = body.filter((p) => p != (domain +':' + me))[0]))
+			.then((body) => serv = body.s4)
 			.catch((err) => {
 				console.log('serv2 - retry GET all servers');
 				setTimeout(() => connect(), 500);
@@ -27,7 +27,7 @@ const connect = async () => {
 			body: 'ping',
 			headers: { 'Content-Type': 'text/plain' },
 		}).catch((err) => {
-			console.log('serv2 - retry');
+			console.log('serv2 - retry s4');
 			setTimeout(() => connect(), 500);
 		});
 	} 
